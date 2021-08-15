@@ -11,6 +11,8 @@ public class Enemy2_Switcher : MonoBehaviour
     float curTime;
     int spriteIdx;
     public float interval = 0.1f;
+    
+
     void Start()
     {
         sprite = GetComponent<SpriteRenderer>();

@@ -11,7 +11,9 @@ public class Enemy4_Controller : MonoBehaviour
     private const float INITIAL_SPEED = 10;
     public const int RIGHT_BORDER = 50;
     public const int LEFT_BORDER = -50;
-    public float test = 0;
+    private bool LEFT_DIRECTION = false;
+    private bool RIGHT_DIRECTION = true;
+    public Transform playerPosition;
 
     private float speed;
     Vector2 direction = Vector2.right; // Starts walking to the left
@@ -26,15 +28,52 @@ public class Enemy4_Controller : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sp = GetComponent<SpriteRenderer>();
         speed = INITIAL_SPEED;
+        sp.enabled = true;
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if (transform.localPosition.x == RIGHT_BORDER)
+        if (Mathf.Abs((playerPosition.localPosition.y - transform.localPosition.y)) < 20)
+        {
+            float nDirectionX = (playerPosition.localPosition.x - transform.localPosition.x) / 30;
+            float nDirectionY = (playerPosition.localPosition.y - transform.localPosition.y) / 30;
+            direction = new Vector2(nDirectionX, nDirectionY);
+            if (playerPosition.localPosition.x < transform.localPosition.x && RIGHT_DIRECTION)
+            {
+                sp.flipX = !sp.flipX;
+                RIGHT_DIRECTION = false;
+                LEFT_DIRECTION = true;
+            }
+            else if (playerPosition.localPosition.x > transform.localPosition.x && LEFT_DIRECTION)
+            {
+                sp.flipX = !sp.flipX;
+                RIGHT_DIRECTION = true;
+                LEFT_DIRECTION = false;
+            }
+
+            speed += 0.03f;
+        }
+        else if (direction != Vector2.right && direction != Vector2.left)
+        {
+            if (RIGHT_DIRECTION)
+                direction = Vector2.right;
+            else if (LEFT_DIRECTION)
+                direction = Vector2.left;
+        }
+
+        rb.velocity = direction * speed;
+        checkBorders();
+    }
+
+    private void checkBorders()
+    {
+        if (transform.localPosition.x >= RIGHT_BORDER)
         {
             sp.flipX = !sp.flipX;
+            RIGHT_DIRECTION = false;
+            LEFT_DIRECTION = true;
             rb.velocity *= invert;
             direction = Vector2.left;
             transform.localPosition = new Vector3(transform.localPosition.x - 1f,
@@ -42,9 +81,11 @@ public class Enemy4_Controller : MonoBehaviour
                                                    transform.localPosition.z);
             return;
         }
-        if (transform.localPosition.x == LEFT_BORDER)
+        if (transform.localPosition.x <= LEFT_BORDER)
         {
             sp.flipX = !sp.flipX;
+            RIGHT_DIRECTION = true;
+            LEFT_DIRECTION = false;
             rb.velocity *= invert;
             direction = Vector2.right;
             transform.localPosition = new Vector3(transform.localPosition.x + 1f,
@@ -52,10 +93,8 @@ public class Enemy4_Controller : MonoBehaviour
                                                    transform.localPosition.z);
             return;
         }
-
-        speed += 0.01f;
-        rb.velocity = direction * speed;
     }
+
 
     void LateUpdate()
     {

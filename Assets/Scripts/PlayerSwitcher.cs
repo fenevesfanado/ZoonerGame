@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerSwitcher : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class PlayerSwitcher : MonoBehaviour
 
     bool isWaiting = true;
 
+    public GameObject []lifes;
+    public GameObject food;
+    bool gotFood = false;
+
     //Keys
     KeyCode upKey = KeyCode.UpArrow;
     KeyCode downKey = KeyCode.DownArrow;
@@ -37,7 +42,7 @@ public class PlayerSwitcher : MonoBehaviour
 
     float sizeSky = 68;
 
-    int hits = 0;
+    int hits = -1;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +53,8 @@ public class PlayerSwitcher : MonoBehaviour
         playerWidth = collider.bounds.size.x;
         transform.localPosition = posInicial;
         transform.localScale = sizeInicial;
+        for (int i = 0; i < 3; i++) lifes[i].GetComponent<SpriteRenderer>().enabled = true;
+
     }
 
     // Update is called once per frame
@@ -77,12 +84,40 @@ public class PlayerSwitcher : MonoBehaviour
         if (!Input.anyKey && !isWaiting)
             sprite.sprite = spritesMoving[spritesMoving.Length-1];
 
+        if(gotFood && transform.localPosition.y <= posInicial.y)
+        {
+            if (Input.anyKey)
+                SceneManager.LoadScene("Winning");
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Enemy"))
-            changeSizeHit();
+        if (collision.CompareTag("Enemy")) {
+            hits += 1;
+            if(hits > 2)
+            {
+                SceneManager.LoadScene("GameOver");
+            }
+            else
+            {
+                lifes[2 - hits].GetComponent<SpriteRenderer>().enabled = false;
+            }
+        }
+      if (collision.CompareTag("Food"))
+      {
+            food.GetComponent<SpriteRenderer>().enabled = false;
+            transform.localScale = new Vector3(transform.localScale.x + 0.09f,
+                                               transform.localScale.y + 0.09f,
+                                               transform.localScale.z);
+
+            gotFood = true;
+            sprite.color = Color.yellow;
+
+            for(int i = 0; i < 3; i++)
+                lifes[i].GetComponent<SpriteRenderer>().enabled = true;
+        }
     }
 
     private void LateUpdate()
@@ -100,19 +135,5 @@ public class PlayerSwitcher : MonoBehaviour
         transform.localPosition = new Vector3(clampedX, clampedY, curPos.z);
     }
 
-    private void changeSizeHit()
-    {
-        switch(hits)
-        {
-            case 0:
-                transform.localScale = new Vector3(transform.localScale.x * increaseStep,
-                                                   transform.localScale.y * increaseStep,
-                                                   transform.localScale.z * increaseStep);
-                break;
-            default:
-                break;
-        }
-
-    }
 
 }

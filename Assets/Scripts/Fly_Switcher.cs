@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy1_Switcher : MonoBehaviour
+public class Fly_Switcher : MonoBehaviour
 {
     // Start is called before the first frame update
 
@@ -11,7 +11,6 @@ public class Enemy1_Switcher : MonoBehaviour
     float curTime;
     int spriteIdx;
     public float interval = 0.1f;
-
 
     void Start()
     {
@@ -22,10 +21,9 @@ public class Enemy1_Switcher : MonoBehaviour
     void Update()
     {
         curTime += Time.deltaTime;
-        
         if (curTime > interval)
         {
-            curTime -= interval;                    
+            curTime -= interval;
             spriteIdx = (spriteIdx + 1) % sprites.Length;
             sprite.sprite = sprites[spriteIdx]; // Modifica o Sprite
         }

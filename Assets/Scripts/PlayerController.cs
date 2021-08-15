@@ -1,17 +1,17 @@
-
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
 
     // Start is called before the first frame update
-    public SpriteRenderer sprite;
+    public SpriteRenderer sp;
     Rigidbody2D rb;
     public float speed;
     float curTime;
     public float interval = 0.1f;
     bool left = false;
     bool right = true;
+    
 
     KeyCode upKey = KeyCode.UpArrow;
     KeyCode downKey = KeyCode.DownArrow;
@@ -20,8 +20,9 @@ public class PlayerController : MonoBehaviour
 
 
     void Start(){
-        sprite = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        sp = GetComponent<SpriteRenderer>();
+        sp.enabled = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -44,12 +45,12 @@ public class PlayerController : MonoBehaviour
             rb.velocity = Vector2.down * speed;
         else if (Input.GetKey(rightKey))
         {
-            sprite.flipX = right; // Inverte o sentido do personagem
+            sp.flipX = right; // Inverte o sentido do personagem
             rb.velocity = Vector2.right * speed; // Movimenta o personagem para direita
         }
         else if (Input.GetKey(leftKey))
         {
-            sprite.flipX = left; // Inverte o sentido do personagem
+            sp.flipX = left; // Inverte o sentido do personagem
             rb.velocity = Vector2.left * speed; // Acelera o personagem para esquerda
 
         }
